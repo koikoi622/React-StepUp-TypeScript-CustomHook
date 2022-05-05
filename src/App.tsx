@@ -1,25 +1,27 @@
 import "./styles.css";
 import { UserCard } from "./components/UserCard";
-import axios from "axios";
-import { User } from "./types/api/user";
-import { UserProfile } from "./types/userProfile";
-
-const user = {
-  id: 1,
-  name: "テスト名前",
-  email: "1111@aaa.com",
-  address: "ADDRESS"
-};
+import { useAllUsers } from "./hooks/useAllUsers";
 
 export default function App() {
-  const [userProfiles, setUserProfiles] = useState<Array<UserProfile>>([]);
+  const { getUsers, userProfiles, loading, error } = useAllUsers();
   const onClickFetchUser = () => {
-    axios.get<Array<User>>("https://jsonplaceholder.typicode.com/users");
+    getUsers();
   };
   return (
     <div className="App">
       <button onClick={onClickFetchUser}>データ取得</button>
-      <UserCard user={user} />
+      <br />
+      {error ? (
+        <p style={{ color: "red" }}>データの取得に失敗しました</p>
+      ) : loading ? (
+        <p>Loading...</p>
+      ) : (
+        <>
+          {userProfiles.map((user) => (
+            <UserCard key={user.id} user={user} />
+          ))}
+        </>
+      )}
     </div>
   );
 }
